@@ -70,10 +70,10 @@ if(isset($_SESSION['email'])){  ?>
 		<td>
 	       	<select name="answer" class="drop">
 		        <option value="0" disabled>Select :</option>
-		        <option value="a">A</option>
-		        <option value="b">B</option>
-		        <option value="c">C</option>
-		        <option value="d">D</option>
+		        <option value="opt1">A</option>
+		        <option value="opt2">B</option>
+		        <option value="opt3">C</option>
+		        <option value="opt4">D</option>
 	       </select>
    		</td>
     </tr>
