@@ -1,34 +1,51 @@
 <?php 
 session_start();
+include('connect.php');
 if(isset($_SESSION['email'])){
 
-include('connect.php');
-
-$i = 0;
-$sql = "select * from questions limit $i,1";
-
-$q = mysqli_query($con, $sql);
-
-if($q->num_rows>0)
-{
-	$question = mysqli_fetch_array($q, MYSQLI_ASSOC);
-	// var_dump($question); //exit;
-}
-
-if(isset($_POST['submit'])){
-	$submit_answer = $_POST['answer'];
-	
-
-	$i++;
-	var_dump($i++);
-	$sql = "select * from questions limit $i,1";
-
+if(!isset($_POST['submit'])){
+	if(isset($_SESSION['level'])){
+		$level = $_SESSION['level'];	
+	}else{
+		$level = 0;
+	}
+	$sql = "select * from questions limit $level, 1";
 	$q = mysqli_query($con, $sql);
-
 	if($q->num_rows>0)
 	{
 		$question = mysqli_fetch_array($q, MYSQLI_ASSOC);
-		// var_dump($question); //exit;
+		
+		$_SESSION['answer'] = $question['answer'];
+		$_SESSION['qid'] = $question['qid'];
+	}
+}// end of isset submit
+
+if(isset($_POST['submit'])){
+	$submit_answer = $_POST['answer'];
+
+	$right_answers = $_SESSION['right_answers'];
+	$wrong_answers = $_SESSION['wrong_answers'];
+	if($submit_answer == $_SESSION['answer']){
+		$right_answers++;
+		$_SESSION['right_answers'] = $right_answers;
+	}else{
+		$wrong_answers++;
+		$_SESSION['wrong_answers'] = $wrong_answers;
+	}
+	echo "Right answer $right_answers<br>";
+	echo "Wrong answer $wrong_answers<br>";
+	$i = $_SESSION['level'];
+	$i++;
+	$sql = "select * from questions limit $i,1";
+	$q = mysqli_query($con, $sql);
+	$_SESSION['level'] = $i;
+	if($q->num_rows>0)
+	{	
+		$question = mysqli_fetch_array($q, MYSQLI_ASSOC);
+		$_SESSION['answer'] = $question['answer'];
+		$_SESSION['qid'] = $question['qid'];
+	}else{
+		header('Location:result.php');
 	}
 }
 ?>
@@ -39,6 +56,7 @@ if(isset($_POST['submit'])){
 <body>
 	<nav>
 		<a href="logout.php">Logout</a>
+		<a href="reset.php">Reset</a>
 	</nav>
 	<h1>Student Dashboard</h1>
 	<form align="center" method="post">
@@ -55,6 +73,7 @@ if(isset($_POST['submit'])){
 			</tr>
 		</table>
 		<input type="submit" value="Next" name="submit">
+		
 	</form>
 </body>
 </html>
